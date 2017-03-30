@@ -1,0 +1,11 @@
+{
+  "name": "meal_bot_bay",
+  "version": "0.7.0",
+  "description": "Manages user subscription for ksa_meal_bot",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "BayMinimum <bearksb1115@gmail.com>",
+  "license": "MIT"
+}
