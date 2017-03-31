@@ -23,7 +23,7 @@ module.exports=function db(action, user_id, callback) {
                             console.log(err);
                             callback(err, undefined);
                             client.end((err)=>{
-                                console.log(err);
+                                if(err) console.log(err);
                             });
                         }else{
                             callback(false, false);
@@ -35,17 +35,18 @@ module.exports=function db(action, user_id, callback) {
                             console.log(err);
                             callback(err, undefined);
                             client.end((err)=>{
-                                console.log(err);
+                                if(err) console.log(err);
                             });
                         }else{
                             callback(false, true);
                         }
                     });
-                }else callback(false, exists);
-
-                client.end((err)=>{
-                    console.log(err);
-                })
+                }else{
+                    callback(false, exists);
+                    client.end((err)=>{
+                        if(err) console.log(err);
+                    })
+                }
 
             });
     });
