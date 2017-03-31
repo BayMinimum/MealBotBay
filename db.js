@@ -14,7 +14,7 @@ module.exports=function db(action, user_id, callback) {
         client
             .query(`select exists (select messenger_id from bay_schema.id_table where messenger_id=\'${user_id}\');`, function (err, res) {
                 let exists=true;
-                if(res.length==0){
+                if(res == undefined){
                     exists=false;
                 }
                 if(action==1 && !exists){
