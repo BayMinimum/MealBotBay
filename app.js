@@ -43,5 +43,5 @@ bot.on('message', (payload, reply) => {
     }
 });
 
-http.createServer(bot.middleware()).listen(3000||process.env.PORT);
+http.createServer(bot.middleware()).listen(process.env.PORT || 8080);
 console.log('KSA meal bot subscription server running');
