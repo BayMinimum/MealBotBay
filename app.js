@@ -1,3 +1,5 @@
+'use strict';
+
 const http = require('http');
 const Bot = require('messenger-bot');
 let db_query = require('./db');
