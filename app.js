@@ -15,7 +15,7 @@ bot.on('error', (err) => {
 bot.on('message', (payload, reply) => {
     let text = payload.message.text;
     let user_id = payload.sender.id;
-    if(text.contains("등록")){
+    if(text.indexOf("등록")>=0){
         db_query(1, user_id, function cb(err, exists) {
             if(err) reply({text: "오류가 발생했습니다. 다시 시도해 주시겠어요?"}, (err)=>{
                 if(err) console.log(err);
@@ -27,7 +27,7 @@ bot.on('message', (payload, reply) => {
                 if(err) console.log(err)
             });
         });
-    }else if(text.contains("해지")){
+    }else if(text.indexOf("해지")>=0){
         db_query(-1, user_id, function cb(err, exists) {
             if(err) reply({text: "오류가 발생했습니다. 다시 시도해 주시겠어요?"}, (err)=>{
                 if(err) console.log(err);
