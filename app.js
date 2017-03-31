@@ -1,29 +1,47 @@
-const http = require('http')
-const Bot = require('messenger-bot')
+const http = require('http');
+const Bot = require('messenger-bot');
+let db_query = require('./db');
 
 let bot = new Bot({
     token: process.env.PAGE_TOKEN,
     verify: process.env.VERIFY_TOKEN,
     app_secret: process.env.APP_SECRET
-})
+});
 
 bot.on('error', (err) => {
     console.log(err.message)
-})
+});
 
 bot.on('message', (payload, reply) => {
-    let text = payload.message.text
+    let text = payload.message.text;
+    let user_id = payload.sender.id;
+    if(text.contains("등록")){
+        db_query(1, user_id, function cb(err, exists) {
+            if(err) reply({text: "오류가 발생했습니다. 다시 시도해 주시겠어요?"}, (err)=>{
+                if(err) console.log(err);
+            });
+            else if(exists) reply({text: "이미 등록하셨습니다."}, (err)=>{
+                if(err) console.log(err);
+            });
+            else reply({text: "등록해주셔서 감사합니다. 앞으로 급식/간식 정보를 보내드릴게요!"}, (err)=>{
+                if(err) console.log(err)
+            });
+        });
+    }else if(text.contains("해지")){
+        db_query(-1, user_id, function cb(err, exists) {
+            if(err) reply({text: "오류가 발생했습니다. 다시 시도해 주시겠어요?"}, (err)=>{
+                if(err) console.log(err);
+            });
+            else if(exists) reply({text: "해지되었습니다. 그동안 이용해 주셔서 감사합니다."}, (err)=>{
+                if(err) console.log(err);
+            });
+            else reply({text: "음...등록하시지 않으셨는데요?"}, (err)=>{
+                if(err) console.log(err)
+            });
+        });
 
-    bot.getProfile(payload.sender.id, (err, profile) => {
-    if (err) throw err
+    }
+});
 
-    reply({ text }, (err) => {
-    if (err) throw err
-
-    console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`)
-})
-})
-})
-
-http.createServer(bot.middleware()).listen(3000)
-console.log('Echo bot server running at port 3000.')
+http.createServer(bot.middleware()).listen(3000||process.env.PORT);
+console.log('KSA meal bot subscription server running');
