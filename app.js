@@ -5,9 +5,7 @@ const Bot = require('messenger-bot');
 let db_query = require('./db');
 
 let bot = new Bot({
-    token: process.env.PAGE_TOKEN,
-    verify: process.env.VERIFY_TOKEN,
-    app_secret: process.env.APP_SECRET
+    token: process.env.PAGE_TOKEN
 });
 
 bot.on('error', (err) => {
