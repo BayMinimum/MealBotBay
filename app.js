@@ -41,6 +41,7 @@ bot.on('message', (payload, reply) => {
                             });
                             res.on('end', ()=>{
                                 let additional_greeting = '';
+                                data = JSON.parse(data);
                                 if(data.first_name) additional_greeting = `안녕하세요, ${data.first_name}님! `;
                                 reply({text: additional_greeting+"등록해주셔서 감사합니다. 앞으로 급식/간식 정보를 보내드릴게요!"}, (err) => {
                                     if (err) console.log(err);
