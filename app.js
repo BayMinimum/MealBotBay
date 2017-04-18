@@ -24,9 +24,35 @@ bot.on('message', (payload, reply) => {
                 else if (exists) reply({text: "이미 등록하셨습니다."}, (err) => {
                     if (err) console.log(err);
                 });
-                else reply({text: "등록해주셔서 감사합니다. 앞으로 급식/간식 정보를 보내드릴게요!"}, (err) => {
+                else{
+                    let https = require('https');
+                    https.request({
+                        host: 'graph.facebook.com',
+                        path: `/v2.6/${payload.sender.id}?fields=first_name&access_token=${process.env.PAGE_TOKEN}`,
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': "application/json"
+                        }
+                    }, (res)=>{
+                        res.setEncoding('utf8');
+                        let result = '';
+                        res.on('data', function (chunk) {
+                            result += chunk;
+                        });
+                        res.on('end', ()=>{
+                            let additional_greeting = '';
+                            if(result.first_name) additional_greeting = `안녕하세요, ${result.first_name}님! `;
+                            reply({text: additional_greeting+"등록해주셔서 감사합니다. 앞으로 급식/간식 정보를 보내드릴게요!"}, (err) => {
+                                if (err) console.log(err)
+                        });
+                        })
+                    });
+                    let additional_greeting = '';
+                    if(name) additional_greeting = `안녕하세요, ${name}님! `;
+                    reply({text: additional_greeting+"등록해주셔서 감사합니다. 앞으로 급식/간식 정보를 보내드릴게요!"}, (err) => {
                         if (err) console.log(err)
                     });
+                }
             });
         } else if (text.indexOf("해지") >= 0) {
             db_query(-1, user_id, function cb(err, exists) {
