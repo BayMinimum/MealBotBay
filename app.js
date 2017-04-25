@@ -9,15 +9,18 @@ let bot = new Bot({
 });
 
 bot.on('error', (err) => {
-    console.log(err.message)
+    console.log(err)
 });
 
 bot.on('message', (payload, reply) => {
     let text = payload.message.text;
     let user_id = payload.sender.id;
+    console.log(`Command: ${text}`);
     try {
         if (text.indexOf("등록") >= 0) {
+            console.log('Querying...');
             db_query(1, user_id, function cb(err, exists) {
+                console.log('Reached callback!');
                 if (err) reply({text: "오류가 발생했습니다. 다시 시도해 주시겠어요?"}, (err) => {
                     if (err) console.log(err);
                 });
@@ -44,9 +47,15 @@ bot.on('message', (payload, reply) => {
                                 data = JSON.parse(data);
                                 if(data.first_name) additional_greeting = `안녕하세요, ${data.first_name}님! `;
                                 reply({text: additional_greeting+"등록해주셔서 감사합니다. 앞으로 급식/간식 정보를 보내드릴게요!"}, (err) => {
-                                    if (err) console.log(err);
+                                        if (err) console.log(err);
+                                });
                             });
-                        });
+                            res.on('error', (err)=>{
+                                console.log(err);
+                                reply({text: "등록해주셔서 감사합니다. 앞으로 급식/간식 정보를 보내드릴게요!"}, (err) => {
+                                    if (err) console.log(err);
+                                });
+                            });
                     });
                     request.on('error', (err)=>{
                         console.log(err);
@@ -66,12 +75,13 @@ bot.on('message', (payload, reply) => {
                     if (err) console.log(err);
                 });
                 else reply({text: "음...등록하시지 않으셨는데요?"}, (err) => {
-                        if (err) console.log(err)
-                    });
+                    if (err) console.log(err)
+                });
             });
 
         }
     }catch (exception){
+        console.log(exception);
         reply({text: "꾸?"}, (err) => {
             if (err) console.log(err);
         });
