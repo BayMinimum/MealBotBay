@@ -142,6 +142,9 @@ function replyCute(replyFunc){
 
 function replyMeal(pre, type, day, replyFunc){
     if(meals===undefined){
+        replyFunc({text: "학교 홈페이지에서 급식정보를 가져오는 중이에요! 잠시만 기다려주세요..."}, (err)=>{
+            console.log(err);
+        });
         getMeals((receivedMeals)=>{
             meals = receivedMeals;
             replyMeal(pre, type, day, replyFunc);
@@ -163,10 +166,15 @@ function replyMeal(pre, type, day, replyFunc){
 }
 
 function replySnack(pre, replyFunc){
-    if(snack===undefined) getSnack((receivedSnack) => {
-        snack = receivedSnack;
-        replySnack(pre, replyFunc);
-    });
+    if(snack===undefined) {
+        replyFunc({text: "가온누리에서 간식정보를 가져오는 중이에요! 잠시만 기다려주세요..."}, (err)=>{
+            console.log(err);
+        });
+        getSnack((receivedSnack) => {
+            snack = receivedSnack;
+            replySnack(pre, replyFunc);
+        });
+    }
     else if(snack===""){
         replyFunc({text: '가온누리에 간식 정보가 없어요...ㅠ'}, (err)=>{
             if(err) console.log(err);
