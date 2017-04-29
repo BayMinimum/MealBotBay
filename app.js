@@ -100,7 +100,7 @@ bot.on('message', (payload, reply) => {
                     if(err) console.log(err);
                 });}
                 else if(requestedDay===1 && requestedMeal===4){
-                    reply({text: "저는 오늘 간식만 알고 있어요...ㅠ"}, (err)=>{
+                    reply({text: "저는 오늘 간식만 알고 있어요...ㅎ"}, (err)=>{
                         if(err) console.log(err);
                     });
                 }
@@ -134,7 +134,7 @@ function randInt(min, max){
 }
 
 function replyCute(replyFunc){
-    var cuteList = ['꾸?', '꾸!', '헿', '힣'];
+    let cuteList = ['꾸?', '꾸!', '헿', '힣'];
     replyFunc({text: cuteList[randInt(0, 4)]}, (err)=>{
         if(err) console.log(err);
     });
@@ -162,7 +162,7 @@ function replyMeal(pre, type, day, replyFunc){
             else textToSend += meals[day][type];
         }
         else for(let i=0;i<3;i+=1){
-            textToSend += `\n[${mealTypeStr[i]}]`
+            textToSend += `\n[${mealTypeStr[i]}]`;
             if(meals[day][i]===""){
                 textToSend += `\n학교 홈페이지에 업로드되지 않았어요...ㅠ`
             }
