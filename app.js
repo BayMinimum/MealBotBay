@@ -161,7 +161,7 @@ function replyMeal(pre, type, day, replyFunc){
             }
             else textToSend += meals[day][type];
         }
-        else for(let i=0;i+=1;i<3){
+        else for(let i=0;i<3;i+=1){
             textToSend += `\n[${mealTypeStr[i]}]`
             if(meals[day][type]===""){
                 textToSend += `\n학교 홈페이지에 업로드되지 않았어요...ㅠ`
