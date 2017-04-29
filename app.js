@@ -2,6 +2,7 @@
 
 const http = require('http');
 const Bot = require('messenger-bot');
+const time = require('time');
 let db_query = require('./db');
 
 let bot = new Bot({
@@ -78,15 +79,102 @@ bot.on('message', (payload, reply) => {
                     if (err) console.log(err)
                 });
             });
+        } else{
+            let requestedMeal=-1;
+            if(text.indexOf('아침')>=0 || text.indexOf('조식')>=0) requestedMeal = 0;
+            else if(text.indexOf('점심')>=0 || text.indexOf('중식')>=0) requestedMeal = 1;
+            else if(text.indexOf('저녁')>=0 || text.indexOf('석식')>=0) requestedMeal = 2;
+            else if(text.indexOf('간식')>=0) requestedMeal = 4;
+            else if(text.indexOf('급식')>=0 || text.indexOf('밥')>=0) requestedMeal = 3;
+            if(requestedMeal>=0){
+                let requestedDay = 0;
+                if(text.indexOf('내일')>=0) requestedDay = 1;
 
+                let now = new time.Date();
+                now.setTimezone("Asia/Seoul");
+                const yyyy=now.getFullYear();
+                const mm=now.getMonth()+1;
+                const dd=now.getDate();
+                if(isLastDay(yyyy, mm, dd) && requestedDay===1){
+                    reply({text:"한 달의 마지막 날에는 다음날 급식을 잘 몰라요ㅠㅠ"}, (err)=>{
+                    if(err) console.log(err);
+                });}
+                else if(requestedDay===1 && requestedMeal===4){
+                    reply({text: "저는 오늘 간식만 알고 있어요...ㅠ"}, (err)=>{
+                        if(err) console.log(err);
+                    });
+                }
+                else{
+                    let prefix = `${yyyy}/${mm}/${dd + requestedDay}`;
+                    if(requestedMeal===4) replySnack(prefix, reply);
+                    else replyMeal(prefix, requestedMeal, requestedDay, reply);
+                }
+            }
         }
     }catch (exception){
         console.log(exception);
-        reply({text: "꾸?"}, (err) => {
-            if (err) console.log(err);
-        });
+        replyCute(reply);
     }
 });
+
+let meals = undefined;
+let snack = undefined;
+let getMeals = require('./meal');
+let getSnack = require('./snack');
+const mealTypeStr = ['조식', '중식', '석식', '급식'];
+function isLastDay(yyyy, mm, dd){
+    if(yyyy%4===0 && mm===2) return dd===29;
+    if(mm===2) return dd===28;
+    if((mm<8 && mm%2===1) ||(mm>=8 && mm%2===0)) return dd===31;
+    return dd===30;
+}
+
+function randInt(min, max){
+    return Math.floor(Math.random() * (max-min) + min);
+}
+
+function replyCute(replyFunc){
+    var cuteList = ['꾸?', '꾸!', '헿', '힣'];
+    replyFunc({text: cuteList[randInt(0, 4)]}, (err)=>{
+        if(err) console.log(err);
+    });
+}
+
+function replyMeal(pre, type, day, replyFunc){
+    if(meals===undefined){
+        getMeals((receivedMeals)=>{
+            meals = receivedMeals;
+            replyMeal(pre, type, day, replyFunc);
+        });
+    }else if(meals[day][0]===""){
+        replyFunc({text: "학교 홈페이지에 급식이 업로드되지 않았어요...ㅠ"}, (err)=>{
+            if(err) console.log(err);
+        })
+    }
+    else{
+        let textToSend = pre;
+        textToSend += ' '+mealTypeStr[type] + '\n';
+        if(type<3) textToSend += '\n'+meals[day][type];
+        else textToSend += '\n'+meals[day][0]+'\n'+meals[day][1]+'\n'+meals[day][2];
+        replyFunc({text: textToSend}, (err)=>{
+            if(err) console.log(err);
+        });
+    }
+}
+
+function replySnack(pre, replyFunc){
+    if(snack===undefined) getSnack((receivedSnack) => {
+        snack = receivedSnack;
+        replySnack(pre, replyFunc);
+    });
+    else if(snack===""){
+        replyFunc({text: '가온누리에 간식 정보가 없어요...ㅠ'}, (err)=>{
+            if(err) console.log(err);
+        })
+    }else replyFunc({text: pre+' 간식\n'+snack}, (err)=>{
+        if(err) console.log(err);
+    });
+}
 
 http.createServer(bot.middleware()).listen(process.env.PORT || 8080);
 console.log('KSA meal bot subscription server running');
