@@ -149,16 +149,25 @@ function replyMeal(pre, type, day, replyFunc){
             meals = receivedMeals;
             replyMeal(pre, type, day, replyFunc);
         });
-    }else if(meals[day][0]===""){
-        replyFunc({text: "학교 홈페이지에 급식이 업로드되지 않았어요...ㅠ"}, (err)=>{
-            if(err) console.log(err);
-        })
-    }
-    else{
+    }else{
         let textToSend = pre;
         textToSend += ' '+mealTypeStr[type] + '\n';
-        if(type<3) textToSend += '\n'+meals[day][type];
-        else textToSend += '\n'+meals[day][0]+'\n'+meals[day][1]+'\n'+meals[day][2];
+        if(type<3){
+            if(meals[day][type]===""){
+                replyFunc({text: "학교 홈페이지에 급식이 업로드되지 않았어요...ㅠ"}, (err)=>{
+                    if(err) console.log(err);
+                });
+                return;
+            }
+            else textToSend += meals[day][type];
+        }
+        else for(let i=0;i+=1;i<3){
+            textToSend += `\n[${mealTypeStr[i]}]`
+            if(meals[day][type]===""){
+                textToSend += `\n학교 홈페이지에 업로드되지 않았어요...ㅠ`
+            }
+            else textToSend += meals[day][type];
+        }
         replyFunc({text: textToSend}, (err)=>{
             if(err) console.log(err);
         });
