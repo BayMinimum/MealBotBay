@@ -87,7 +87,7 @@ module.exports= function (callback) {
                         console.log(exception);
                         console.log("Substring operation for meal chunk failed!");
                     }
-                        meal.push();
+                        meal.push(chunk);
                     }
                 );
                 meals.push(meal);
