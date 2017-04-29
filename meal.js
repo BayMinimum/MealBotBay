@@ -7,7 +7,7 @@ module.exports= function (callback) {
 
     let now = new time.Date();
     now.setTimezone("Asia/Seoul");
-    const yyyy=now.getYear();
+    const yyyy=now.getFullYear();
     const mm=now.getMonth()+1;
     const dd=now.getDate();
 
@@ -58,7 +58,16 @@ module.exports= function (callback) {
             meals.push(meal);
         });
         */
-        let lookupDate = `${yyyy}-${mm}-${dd}`;
+        function generateLookupDate(yyyy, mm, dd){
+            let target = `${yyyy}-`;
+            if(mm<10) target += `0${mm}-`;
+            else target += `${mm}-`;
+            if(dd<10) target += `0${dd}`;
+            else target += `${dd}`;
+            return target
+        }
+
+        let lookupDate = generateLookupDate(yyyy, mm, dd);
         let found1 = false;
         $(".meal-con").find('tr').each((i, elem)=>{
             if($(elem).find('th').toString().indexOf(lookupDate)>=0){
@@ -77,8 +86,7 @@ module.exports= function (callback) {
                 meals.push(meal);
                 if(!found1){
                     found1=true;
-                    console.log('Found today\'s meal');
-                    lookupDate = `${yyyy}-${mm}-${dd+1}`;
+                    lookupDate = generateLookupDate(yyyy, mm, dd+1);
                 }
                 if(found1) return false;
                 }
