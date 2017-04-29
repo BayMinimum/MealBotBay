@@ -98,7 +98,7 @@ module.exports= function (callback) {
                 if(found1) return false;
                 }
         });
-        while(meals.length>=2) meals.push(["", "", ""]);
+        while(meals.length<2) meals.push(["", "", ""]);
         callback(meals);
     };
 
