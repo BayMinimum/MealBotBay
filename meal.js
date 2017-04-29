@@ -75,13 +75,13 @@ module.exports= function (callback) {
                     }
                 );
                 meals.push(meal);
+                if(!found1){
+                    found1=true;
+                    console.log('Found today\'s meal');
+                    lookupDate = `${yyyy}-${mm}-${dd+1}`;
                 }
-            if(!found1){
-                found1=true;
-                console.log('Found today\'s meal');
-                lookupDate = `${yyyy}-${mm}-${dd+1}`;
-            }
-            if(found1) return false;
+                if(found1) return false;
+                }
         });
         callback(meals);
     };
