@@ -163,10 +163,10 @@ function replyMeal(pre, type, day, replyFunc){
         }
         else for(let i=0;i<3;i+=1){
             textToSend += `\n[${mealTypeStr[i]}]`
-            if(meals[day][type]===""){
+            if(meals[day][i]===""){
                 textToSend += `\n학교 홈페이지에 업로드되지 않았어요...ㅠ`
             }
-            else textToSend += meals[day][type];
+            else textToSend += meals[day][i];
         }
         replyFunc({text: textToSend}, (err)=>{
             if(err) console.log(err);
