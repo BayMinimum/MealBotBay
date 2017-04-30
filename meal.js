@@ -53,9 +53,7 @@ module.exports= function (callback) {
                         .replace(/amp;/g, "");
                 }
             );
-            // remove \n in start or end
-            if(chunk.charAt(0)==='\n') chunk.replace('\n', "");
-            if(chunk.charAt(chunk.length)==='\n') chunk=chunk.substring(0, chunk.length-1);
+            if(chunk.charAt(chunk.length-1)==='\n') chunk=chunk.substring(0, chunk.length-1);
             meal.push(chunk);
         });
         meals.push(meal);
