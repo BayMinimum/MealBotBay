@@ -1,6 +1,6 @@
 {
   "name": "meal_bot_bay",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "KSA Meal Bot server for Facebook Messenger",
   "main": "app.js",
   "scripts": {
