@@ -1,5 +1,5 @@
 // From BayMinimum/MealTweet
-module.exports= function (callback) {
+module.exports = function (callback) {
     'use strict';
     let cheerio = require('cheerio');
     let https = require('https');
@@ -45,7 +45,10 @@ module.exports= function (callback) {
         let meal = [];
         $(".meal").find('ul').each((i, elem) => {
             let chunk = "";
+            let flag = false
             $(elem).find('li').each((j, elem) => {
+                if(flag) chunk += "\n"
+                else flag = true
                     chunk += $(elem).toString()
                         .replace("<li>", "")
                         .replace("</li>", "")
@@ -72,25 +75,26 @@ module.exports= function (callback) {
             if($(elem).find('th').toString().indexOf(lookupDate)>=0){
                 let meal = [];
                 $(elem).find('li').each((j, elem) => {
-                    let chunk = $(elem).toString()
-                        .replace("<li>", "")
-                        .replace("</li>", "")
-                        .replace(/ /g, "")
-                        .replace(/amp;/g, "")
-                        .replace("[조식]", "")
-                        .replace("[중식]", "")
-                        .replace("[석식]", "");
-                    try {
-                        if(chunk.charAt(chunk.length-1)==='\n') chunk = chunk.substring(0, chunk.length-1);
-                    }catch(exception){
-                        console.log(exception);
-                        console.log("Substring operation for meal chunk failed!");
-                    }
+                        let chunk = $(elem).toString()
+                            .replace("<li>", "")
+                            .replace("</li>", "")
+                            .replace(/ /g, "")
+                            .replace(/amp;/g, "")
+                            .replace("[조식]", "")
+                            .replace("[중식]", "")
+                            .replace("[석식]", "")
+                            .replace(/,/g, "\n");
+                        try {
+                            if(chunk.charAt(chunk.length-1)==='\n') chunk = chunk.substring(0, chunk.length-1);
+                        }catch(exception){
+                            console.log(exception);
+                            console.log("Substring operation for meal chunk failed!");
+                        }
                         meal.push(chunk);
                     }
                 );
                 meals.push(meal);
-                }
+            }
         });
         while(meals.length<2) meals.push(["", "", ""]);
         callback(meals);
