@@ -1,6 +1,7 @@
 'use strict';
 
 const http = require('http');
+const https = require('https');
 const Bot = require('messenger-bot');
 const time = require('time');
 let db_query = require('./db');
@@ -119,9 +120,36 @@ bot.on('message', (payload, reply) => {
 
 let meals = undefined;
 let snack = undefined;
-let meal_bot_core = require('meal_bot_core')
-let getMeals = meal_bot_core.meal
-let getSnack = meal_bot_core.snack
+
+function getFromCore(type, callback) {
+    let data = ""
+    let req = https.request({
+        host: "us-central1-meal-bot-core.cloudfunctions.net",
+        path: "/meal-bot-core",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        method: "POST",
+        agent: false
+    }, function (res) {
+        res.setEncoding("utf8")
+        res.on("data", function (chunk) {
+            data += chunk
+            console.log("received chunk")
+        })
+        res.on("end", function () {
+            callback(data)
+        })
+    })
+    req.write(
+        `{"type":"${type}"}`
+    )
+    req.on("error", (err) => {
+        console.log(err)
+    })
+    req.end()
+}
+
 const mealTypeStr = ['조식', '중식', '석식', '급식'];
 function isLastDay(yyyy, mm, dd){
     if(yyyy%4===0 && mm===2) return dd===29;
@@ -146,8 +174,8 @@ function replyMeal(pre, type, day, replyFunc){
         replyFunc({text: "학교 홈페이지에서 급식정보를 가져오는 중이에요! 잠시만 기다려주세요..."}, (err)=>{
             console.log(err);
         });
-        getMeals((receivedMeals)=>{
-            meals = receivedMeals;
+        getFromCore("meal", (receivedMeals)=>{
+            meals = JSON.parse(receivedMeals);
             replyMeal(pre, type, day, replyFunc);
         });
     }else{
@@ -163,9 +191,9 @@ function replyMeal(pre, type, day, replyFunc){
             else textToSend += meals[day][type];
         }
         else for(let i=0;i<3;i+=1){
-            textToSend += `\n[${mealTypeStr[i]}]`;
+            textToSend += `\n[${mealTypeStr[i]}]\n`;
             if(meals[day][i]===""){
-                textToSend += `\n학교 홈페이지에 업로드되지 않았어요...ㅠ`
+                textToSend += `학교 홈페이지에 업로드되지 않았어요...ㅠ`
             }
             else textToSend += meals[day][i];
         }
@@ -180,7 +208,7 @@ function replySnack(pre, replyFunc){
         replyFunc({text: "가온누리에서 간식정보를 가져오는 중이에요! 잠시만 기다려주세요..."}, (err)=>{
             if(err) console.log(err);
         });
-        getSnack((receivedSnack) => {
+        getFromCore("snack", (receivedSnack) => {
             snack = receivedSnack;
             replySnack(pre, replyFunc);
         });
@@ -189,7 +217,7 @@ function replySnack(pre, replyFunc){
         replyFunc({text: '가온누리에 간식 정보가 없었던 것 같은데...다시 한 번 찾아보고 올게요!'}, (err)=>{
             if(err) console.log(err);
         });
-        getSnack((receivedSnack) => {
+        getFromCore("snack", (receivedSnack) => {
             snack = receivedSnack;
             let replyText;
             if(snack==="") replyText = '가온누리에 간식 정보가 없어요...ㅠ';
